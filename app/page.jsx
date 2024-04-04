@@ -1,21 +1,34 @@
 "use client";
-import Link from "next/link";
+import Courses from "./components/Courses";
+import CourseSearch from "./components/CourseSearch";
+import { useState, useEffect } from "react";
+import LoadingPage from "./Loading";
 
 const HomePage = () => {
+  const [courses, setCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    const fetchCourses = async () => {
+      const res = await fetch("/api/courses");
+      const data = await res.json();
+
+      setCourses(data);
+      setLoading(false);
+    };
+    fetchCourses();
+  }, []);
+  /* console.log(courses);
+   */
+  if (loading) return <LoadingPage />;
   return (
     <>
-      <h1>hello</h1>
-      <ul>
-        <li>
-          <Link href="/">Home </Link>
-        </li>
-        <li>
-          <Link href="/about">About </Link>
-        </li>
-        <li>
-          <Link href="/about/team">Team </Link>
-        </li>
-      </ul>
+      <h1> Welcome to our course platform!</h1>
+      <CourseSearch
+        getSearchResults={(results) => {
+          setCourses(results);
+        }}
+      />
+      <Courses courses={courses} />
     </>
   );
 };
